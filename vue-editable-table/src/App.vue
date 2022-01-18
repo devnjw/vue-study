@@ -1,77 +1,53 @@
-
 <template>
-  <div id="app">
-    <b-table :items="items" :fields="fields">
-      <template #cell(name)="data">
-          <b-form-input v-if="items[data.index].isEdit && selectedCell === 'name'" type="text" v-model="items[data.index].name"></b-form-input>
-          <span v-else @click="editCellHandler(data, 'name')">{{data.value}}</span>
-      </template>
-      <template #cell(department)="data">
-        <b-form-select v-if="items[data.index].isEdit && selectedCell === 'department'" v-model="items[data.index].department" :options="['Development', 'Marketing', 'HR', 'Accounting']" class="form-control"></b-form-select>
-        <span v-else @click="editCellHandler(data, 'department')">{{data.value}}</span>
-      </template>
-      <template #cell(age)="data">
-          <b-form-input v-if="items[data.index].isEdit && selectedCell === 'age'" type="number" v-model="items[data.index].age"></b-form-input>
-          <span v-else @click="editCellHandler(data, 'age')">{{data.value}}</span>
-      </template>
-      <template #cell(dateOfBirth)="data">
-        <b-form-datepicker v-if="items[data.index].isEdit && selectedCell === 'dateOfBirth'" v-model="items[data.index].dateOfBirth"></b-form-datepicker>
-        <span v-else @click="editCellHandler(data, 'dateOfBirth')">{{data.value}}</span>
-      </template>
-    </b-table>
-     <pre>
-      {{items}}
-    </pre>
-  </div>
+    
+    <div id="app">
+      <ul class="todo-list">
+        <v-simple-table>
+          <tr v-for="(item, index) in items" :key="index">
+            <td>
+              <span v-on:click="enableEdit(index, true)">
+                  <button v-if="! item.edit">{{item.title}}</button>
+                  <input type="text" class="edit_item" v-model="item.title" v-if="item.edit" v-focus v-on:keyup.enter="enableEdit(index, false)" v-on:blur="enableEdit(index, false)">
+              </span>
+            </td>
+          </tr>
+        </v-simple-table>
+      </ul>
+    </div>
 </template>
 
 <script>
-export default {
-  name: "App",
-  components: {},
-  data() {
-    return {
-      fields: [
-        { key: "name", label: "Name"},
-        { key: "department", label: "Department" },
-        { key: "age", label: "Age" },
-        { key: "dateOfBirth", label: "Date Of Birth" },
-        { key: 'edit', label: ''}
-      ],
-       items: [
-          { age: 40, name: 'Dickerson', department: 'Development', dateOfBirth: '1984-05-20' },
-          { age: 21, name: 'Larsen', department: 'Marketing', dateOfBirth: '1984-05-20' },
-          { age: 89, name: 'Geneva', department: 'HR', dateOfBirth: '1984-05-20' },
-          { age: 38, name: 'Jami', department: 'Accounting', dateOfBirth: '1984-05-20' }
-        ],
-        selectedCell: null
-    };
-  },
-  mounted() {
-      this.items = this.items.map(item => ({...item, isEdit: false}));
-  },
-  methods: {
-      editCellHandler(data, name) {
-        this.items = this.items.map(item => ({...item, isEdit: false}));
-        this.items[data.index].isEdit = true;
-        this.selectedCell = name
-      }
-    }
-  }
-</script>
 
-<style>
-#app {
-  text-align: center;
-  margin: 60px;
+export default {
+  el: '#app',
+  data: () => ({
+    items: [{
+      title: 'HTML5',
+    }, {
+      title: 'CSS3',
+    }, {
+      title: 'JavaScript',
+    }, ],
+  }),
+  
+  directives: { focus: {
+    inserted(el) {
+        el.focus()
+      },
+  } },
+
+  methods: {
+    enableEdit: function(index, flag) {
+      this.items[index]['edit'] = flag;
+      // this.items = this.items.slice()
+    },
+  },
+
+  created() {
+    for (let i = 0; i < this.items.length; i++) {
+      this.items[i]['edit'] = true
+    }
+    this.items = this.items.slice()
+  }
 }
-thead, tbody, tfoot, tr, td, th {
-  text-align: left;
-  width: 100px;
-  vertical-align: middle;
-}
-pre {
-  text-align: left;
-  color: #d63384;
-}
-</style>
+</script>
