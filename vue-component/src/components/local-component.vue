@@ -1,22 +1,28 @@
 <template>
-  <div>
-    <button @click="showTitle">Click</button>
-    <span>{{ title }}</span>
-  </div>
+    <span v-on:click="enableEdit(item, true)">
+        <button v-if="!edit">{{item.title}}</button>
+        <input v-else type="text" class="edit_item" v-model="item.title" v-focus v-on:keyup.enter="enableEdit(item, false)" v-on:blur="enableEdit(item, false)">
+    </span>
 </template>
 
 <script>
   export default {
     name: 'local-component',
-    data () {
-      return {
-        title: void 0
-      }
+    data: () => ({
+        edit: false,
+    }),
+    props: {
+        item: Object
     },
+    directives: { focus: {
+        inserted(el) {
+            el.focus()
+        },
+    }},
     methods: {
-      showTitle () {
-        this.title = 'Local Component!!'
-      }
+        enableEdit: function(item, flag) {
+            this.edit = flag;
+        },
     }
   }
 </script>
